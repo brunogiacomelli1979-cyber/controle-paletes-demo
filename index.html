@@ -7,17 +7,18 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
 <title>Controle de Paletes · Demonstração</title>
 <link rel="stylesheet" href="./styles.css">
+<script defer src="./rules.js"></script>
 <script defer src="./app.js"></script>
 </head>
 <body>
-<div class="warning"><strong>DEMONSTRAÇÃO</strong> · Dados 100% fictícios · Sem conexão com o banco de produção · Registros descartados ao atualizar a página</div>
+<div class="warning"><strong>MODO DEMONSTRAÇÃO — DADOS FICTÍCIOS</strong> · Sem conexão com o banco de produção · Registros descartados ao atualizar a página</div>
 <header class="topbar">
  <div class="brand"><div class="brand-icon" aria-hidden="true">▤</div><div><strong>CONTROLE DE PALETES</strong><small>Registro de permanência aeroportuária</small></div></div>
  <nav aria-label="Seções"><button id="navEntry" class="active" aria-current="page" type="button">Lançamentos</button><button id="navReport" type="button">Relatórios</button></nav>
 </header>
 <main class="page">
 <section id="entryScreen">
- <div class="heading"><div><div class="eyebrow">OPERAÇÃO · COLETA SIMULADA</div><h1>Registrar palete</h1><p>Um registro por palete, por janela de 12 horas.</p></div><div class="date"><small>DATA DO REGISTRO</small><strong id="dateToday">—</strong><small>Horário de Brasília (SP)</small></div></div>
+ <div class="heading"><div><div class="eyebrow">OPERAÇÃO · COLETA SIMULADA</div><h1>Registrar palete</h1><p>Um registro por palete, por janela de 12 horas.</p></div><div class="date"><small>DATA DO REGISTRO</small><strong id="dateToday">—</strong><small>America/Sao_Paulo</small></div></div>
  <div class="columns">
   <section class="panel" aria-labelledby="formTitle">
    <div class="panel-head"><h2 id="formTitle">Novo lançamento</h2><span class="pill">SEM LOGIN</span></div>
@@ -25,7 +26,7 @@
     <fieldset><legend>Horário da coleta</legend><div class="shifts"><label><input type="radio" name="shift" value="08:00" checked><span>☀ <b>08:00</b> <small>Manhã</small></span></label><label><input type="radio" name="shift" value="20:00"><span>☾ <b>20:00</b> <small>Noite</small></span></label></div></fieldset>
     <label class="field" for="pallet">Palete / Sigla <em>*</em><input id="pallet" maxlength="30" autocomplete="off" placeholder="EX.: PMC12345" required><small>Somente letras e números, sem espaços.</small></label>
     <label class="field" for="airline">Código da companhia aérea <em>*</em><input id="airline" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="EX.: 001" required><small>Exatamente 3 dígitos. Zeros à esquerda são preservados.</small></label>
-    <button class="primary" type="submit">Registrar palete <span>→</span></button><p id="notice" class="notice" role="status" aria-live="polite"></p>
+    <button class="primary" type="submit">Registrar palete</button><p id="notice" class="notice" role="status" aria-live="polite"></p>
    </form>
   </section>
   <section class="panel"><div class="panel-head"><h2>Lançamentos do dia</h2><span id="todayCount" class="count">0</span></div>
@@ -37,10 +38,11 @@
 <section id="reportScreen" hidden>
  <div class="heading"><div><div class="eyebrow">GESTÃO · APURAÇÃO SIMULADA</div><h1>Relatórios</h1><p>Exemplo de apuração mensal por palete e companhia aérea.</p></div></div>
  <section class="panel">
-  <div class="filters"><label>Mês de referência<input type="month" id="month"></label><label>Companhia aérea<select id="filterCia"><option value="">Todas</option></select></label><button id="reset" class="secondary" type="button">Restaurar dados fictícios</button></div>
-  <div class="metrics"><div><small>Paletes com cobrança</small><strong id="mPallets">0</strong></div><div><small>Períodos cobrados</small><strong id="mPeriods">0</strong></div><div><small>Companhias</small><strong id="mCias">0</strong></div></div>
+  <div class="filters"><label>Mês de referência<input type="month" id="month"></label><label>Companhia aérea<select id="filterCia"><option value="">Todas</option></select></label><label>Consultar palete<input id="searchPallet" type="search" maxlength="30" placeholder="Ex.: PMC12345"></label><button id="reset" class="secondary" type="button">Restaurar dados fictícios</button></div>
+  <p id="reportReference" class="report-reference"></p>
+  <div class="metrics"><div><small>Paletes com períodos contabilizados</small><strong id="mPallets">0</strong></div><div><small>Períodos contabilizados</small><strong id="mPeriods">0</strong></div><div><small>Companhias</small><strong id="mCias">0</strong></div></div>
   <div class="table-head"><h2>Apuração por companhia</h2><div><button id="csv" class="secondary" type="button">Exportar CSV</button> <button id="print" class="secondary" type="button">Imprimir / PDF</button></div></div>
-  <div class="scroll"><table><thead><tr><th>Palete</th><th>CIA</th><th>Períodos cobrados</th></tr></thead><tbody id="reportRows"></tbody></table></div>
+  <div class="scroll"><table><thead><tr><th>Palete</th><th>CIA</th><th>Períodos contabilizados</th></tr></thead><tbody id="reportRows"></tbody></table></div>
   <p class="hint">As duas primeiras coletas consecutivas são isentas. O terceiro período e os seguintes são contabilizados. Coleta ausente ou troca de companhia reinicia a contagem. Não são calculados valores monetários.</p>
  </section>
 </section>

@@ -15,13 +15,21 @@ function restore(){
     [2,"20:00","PAG00188","002"],[1,"08:00","PAG00188","002"],[1,"20:00","PAG00188","002"],[0,"08:00","PAG00188","002"],
     [0,"08:00","PMC00999","003"]
   ];
+  // Month boundary fixture: compute the sequence before applying monthly filters.
+  const first=today.slice(0,7)+"-01";
+  const previous=new Date(Date.parse(first+"T00:00:00Z")-86400000).toISOString().slice(0,10);
+  examples.push([0,"20:00","AKEDEMO1","001"],[0,"08:00","PAGDEMO2","002"]);
   rows=examples.map(([age,turno,palete,cia])=>({id:nextId++,data:oldDay(age),turno,palete,cia}));
+  for(const [data,turno] of [[previous,"08:00"],[previous,"20:00"],[first,"08:00"],[first,"20:00"]])
+    rows.push({id:nextId++,data,turno,palete:"PMCFRONTEIRA",cia:"004"});
+  for(const [age,turno,cia] of [[5,"08:00","005"],[5,"20:00","005"],[4,"20:00","005"],[3,"08:00","005"],[3,"20:00","006"],[2,"08:00","006"],[2,"20:00","006"]])
+    rows.push({id:nextId++,data:oldDay(age),turno,palete:"PAGSEQUENCIA",cia});
 }
 el("dateToday").textContent=dateText(today);
 el("month").value=today.slice(0,7);
 const pallet=el("pallet"),airline=el("airline"),notice=el("notice");
-pallet.addEventListener("input",()=>pallet.value=pallet.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,30));
-airline.addEventListener("input",()=>airline.value=airline.value.replace(/[^0-9]/g,"").slice(0,3));
+pallet.addEventListener("input",()=>pallet.value=pallet.value.toUpperCase().slice(0,30));
+airline.addEventListener("input",()=>airline.value=airline.value.slice(0,3));
 function feedback(message,error=false){notice.textContent=message;notice.className="notice"+(error?" error":"")}
 function cell(content){const td=document.createElement("td");td.textContent=String(content);return td}
 function emptyRow(tbody,colspan,message){const tr=document.createElement("tr"),td=cell(message);td.colSpan=colspan;td.className="empty";tr.append(td);tbody.append(tr)}
@@ -47,19 +55,9 @@ el("entryForm").addEventListener("submit",event=>{
   rows.push({id:nextId++,data:today,turno,palete,cia});
   pallet.value="";pallet.focus();feedback("Registrado apenas na demonstração. Nenhum dado real foi alterado.");render();
 });
-function slot(row){const [y,m,d]=row.data.split("-").map(Number);return Math.floor(Date.UTC(y,m-1,d)/86400000)*2+(row.turno==="20:00"?1:0)}
-function charges(){
-  const last=new Map(),billable=[];
-  for(const r of [...rows].sort((a,b)=>slot(a)-slot(b)||a.id-b.id)){
-    const p=last.get(r.palete),s=slot(r),count=p&&p.cia===r.cia&&p.slot+1===s?p.count+1:1;
-    last.set(r.palete,{cia:r.cia,slot:s,count});
-    if(count>=3)billable.push(r);
-  }
-  return billable;
-}
 function currentReport(){
   const month=el("month").value,filter=el("filterCia").value,groups=new Map();
-  for(const r of charges().filter(x=>x.data.startsWith(month)&&(!filter||filter===x.cia))){
+  for(const r of PalletRules.charges(rows).filter(x=>month && x.data.startsWith(month)&&(!filter||filter===x.cia)&&x.palete.includes(el("searchPallet").value.trim().toUpperCase()))){
     const key=r.cia+"|"+r.palete,previous=groups.get(key);
     groups.set(key,{cia:r.cia,palete:r.palete,count:(previous?previous.count:0)+1});
   }
@@ -73,7 +71,8 @@ function renderReport(){
   const report=currentReport(),tbody=el("reportRows");tbody.replaceChildren();
   if(!report.length)emptyRow(tbody,3,"Nenhum período cobrável com este filtro.");
   for(const r of report){const tr=document.createElement("tr");tr.append(cell(r.palete),cell(r.cia),cell(r.count));tbody.append(tr)}
-  el("mPallets").textContent=String(report.length);
+  el("reportReference").textContent="Referência: "+(el("month").value||"selecione o mês")+" · CIA: "+(selected||"todas")+" · Palete: "+(el("searchPallet").value||"todos");
+  el("mPallets").textContent=String(new Set(report.map(r=>r.palete)).size);
   el("mPeriods").textContent=String(report.reduce((a,r)=>a+r.count,0));
   el("mCias").textContent=String(new Set(report.map(r=>r.cia)).size);
 }
@@ -89,7 +88,8 @@ el("navEntry").addEventListener("click",()=>navigate("entry"));
 el("navReport").addEventListener("click",()=>navigate("report"));
 el("month").addEventListener("change",renderReport);
 el("filterCia").addEventListener("change",renderReport);
-el("reset").addEventListener("click",()=>{restore();el("filterCia").value="";render()});
+el("searchPallet").addEventListener("input",renderReport);
+el("reset").addEventListener("click",()=>{restore();el("filterCia").value="";el("searchPallet").value="";feedback("Base fictícia restaurada.");render()});
 el("print").addEventListener("click",()=>window.print());
 el("csv").addEventListener("click",()=>{
   const data=currentReport(),lines=["Palete;CIA;Periodos cobrados",...data.map(x=>[x.palete,x.cia,x.count].join(";"))];
