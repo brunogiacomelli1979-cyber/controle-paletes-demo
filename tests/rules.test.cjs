@@ -1,0 +1,12 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const {charges}=require('../rules.js');
+const sequence=(pairs)=>pairs.map(([data,turno,cia='001'],i)=>({id:i+1,data,turno,cia,palete:'PMCDEMO'}));
+test('primeira coleta isenta',()=>assert.equal(charges(sequence([['2026-11-01','08:00']])).length,0));
+test('segunda coleta isenta',()=>assert.equal(charges(sequence([['2026-11-01','08:00'],['2026-11-01','20:00']])).length,0));
+test('terceira e seguintes contabilizadas',()=>assert.deepEqual(charges(sequence([['2026-11-01','08:00'],['2026-11-01','20:00'],['2026-11-02','08:00'],['2026-11-02','20:00']])).map(r=>r.id),[3,4]));
+test('coleta ausente reinicia',()=>assert.equal(charges(sequence([['2026-11-01','08:00'],['2026-11-01','20:00'],['2026-11-02','20:00']])).length,0));
+test('troca de companhia reinicia',()=>assert.equal(charges(sequence([['2026-11-01','08:00'],['2026-11-01','20:00'],['2026-11-02','08:00','002']])).length,0));
+test('virada de mês preserva sequência',()=>assert.equal(charges(sequence([['2026-10-31','08:00'],['2026-10-31','20:00'],['2026-11-01','08:00']]))[0].data,'2026-11-01'));
+test('virada de ano preserva sequência',()=>assert.equal(charges(sequence([['2025-12-31','08:00'],['2025-12-31','20:00'],['2026-01-01','08:00']]))[0].data,'2026-01-01'));
+test('ano bissexto e entrada fora de ordem',()=>assert.equal(charges(sequence([['2024-03-01','08:00'],['2024-02-29','08:00'],['2024-02-29','20:00']])).length,1));

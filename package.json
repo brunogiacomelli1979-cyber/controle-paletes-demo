@@ -1,0 +1,26 @@
+{
+  "name": "controle-paletes-demo",
+  "version": "1.0.0",
+  "description": "Demonstração isolada do Controle de Paletes Aeronáuticos",
+  "main": "app.js",
+  "scripts": {
+    "test": "node --test tests/rules.test.cjs tests/security.test.cjs",
+    "test:e2e": "playwright test",
+    "screenshots": "node tests/screenshots.cjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brunogiacomelli1979-cyber/controle-paletes-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/brunogiacomelli1979-cyber/controle-paletes-demo/issues"
+  },
+  "homepage": "https://github.com/brunogiacomelli1979-cyber/controle-paletes-demo#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.65.1"
+  },
+  "private": true
+}

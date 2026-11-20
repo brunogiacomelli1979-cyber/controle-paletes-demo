@@ -1,0 +1,2 @@
+const {defineConfig}=require('@playwright/test');
+module.exports=defineConfig({testDir:'./tests',testMatch:'**/*.spec.cjs',fullyParallel:true,retries:0,reporter:'list',use:{baseURL:process.env.DEMO_URL||'http://127.0.0.1:4173',browserName:'chromium',viewport:{width:1440,height:900},timezoneId:'America/Sao_Paulo'},webServer:process.env.DEMO_URL?undefined:{command:'node tests/server.cjs',url:'http://127.0.0.1:4173',reuseExistingServer:!process.env.CI}});
