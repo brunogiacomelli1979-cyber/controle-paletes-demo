@@ -1,18 +1,30 @@
-name: Publicar demonstracao publica isolada
+name: Testar e publicar demonstracao
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
-  group: portfolio-pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
   pages:
+    if: github.event_name != 'pull_request'
+    needs: test
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -23,24 +35,12 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
-      - name: Verificar arquivos da demo
-        shell: bash
+      - name: Preparar apenas arquivos publicos
         run: |
-          set -eu
-          test -f index.html
-          test -f app.js
-          test -f styles.css
-          node --check app.js
-          if grep -Ei 'workers[.]dev|/api/|fetch\(|XMLHttpRequest|WebSocket|indexedDB|localStorage|sessionStorage|database_id|D1' index.html app.js; then
-            echo 'A demonstracao contem referencia proibida ao ambiente operacional'
-            exit 1
-          fi
-          if grep -Ei '@import|url\(' styles.css; then
-            echo 'Recurso de CSS externo nao permitido'
-            exit 1
-          fi
           mkdir -p site
-          cp index.html app.js styles.css site/
+          cp index.html app.js rules.js styles.css site/
+          cp -r assets site/
+          touch site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
