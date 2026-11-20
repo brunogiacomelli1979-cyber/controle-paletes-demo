@@ -27,14 +27,13 @@ Este repositório contém uma **demonstração estática independente**, com int
 
 Para usar sem hospedagem: abra `index.html` em um navegador moderno. Os arquivos `app.js` e `styles.css` devem permanecer na mesma pasta.
 
-### Como publicar como portfólio
+### Publicação do portfólio
 
-1. Crie um **novo repositório público vazio** chamado `controle-paletes-demo`.
-2. Copie **apenas o conteúdo da pasta `demo/`** para a raiz desse novo repositório, inclusive `.github/workflows/pages.yml`. **Não copie o histórico Git nem os diretórios operacionais do projeto original.**
-3. Abra `Settings → Pages` do novo repositório e selecione `Source: GitHub Actions`.
-4. Execute o workflow `Publicar demonstracao publica isolada`, ou faça um novo commit na `main`.
-5. Confira o site público, seus dados fictícios e o funcionamento de lançamento, relatório e CSV.
-6. Depois, altere a visibilidade do **repositório operacional** para privada. O site público deverá continuar no repositório de demonstração independente.
+O código de demonstração já está neste repositório público independente.
+
+O site será disponibilizado pelo GitHub Pages após sua ativação em **Settings → Pages → Build and deployment → Source: GitHub Actions**. O workflow `Publicar demonstracao publica isolada` foi configurado para publicar somente os três arquivos da demonstração.
+
+[Consultar publicação no GitHub Actions](https://github.com/brunogiacomelli1979-cyber/controle-paletes-demo/actions)
 
 ## O que a solução real entrega
 
