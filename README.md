@@ -4,7 +4,7 @@
 
 Um caso real de melhoria de processo operacional: transformar uma coleta manual em um fluxo digital que conecta o registro à conferência e à emissão de relatórios. Esta versão de portfólio permite experimentar o conceito com dados inteiramente fictícios.
 
-<!-- Link da demonstração será incluído somente após confirmação da publicação. -->
+**[Explorar demonstração interativa](https://brunogiacomelli1979-cyber.github.io/controle-paletes-demo/)**
 
 ## Problema identificado
 
@@ -78,4 +78,5 @@ Consulte [como os testes são executados](TESTING.md) para reproduzir as verific
 
 ---
 
-Projeto de portfólio sobre tecnologia aplicada à digitalização e melhoria de processos operacionais.
+[Abra a demonstração](https://brunogiacomelli1979-cyber.github.io/controle-paletes-demo/) e conheça o projeto de portfólio sobre tecnologia aplicada à digitalização e melhoria de processos operacionais.
+
